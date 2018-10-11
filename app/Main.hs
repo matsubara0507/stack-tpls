@@ -24,8 +24,8 @@ import           StackTemplate.Collector.Cmd
 main :: IO ()
 main = withGetOpt "[options] [input-file]" opts $ \r args ->
   case toCmd (#input @= args <: r) of
-    PrintVersion -> B.putStr $ fromString (showVersion version)
-    RunCmd opts' -> run opts'
+    PrintVersion       -> B.putStr $ fromString (showVersion version)
+    FetchHsfiles opts' -> fetchHsfiles opts'
   where
     opts = #version @= versionOpt
         <: #verbose @= verboseOpt

@@ -38,7 +38,9 @@ default-extensions:
 dependencies:
 - base >= 4.7 && < 5
 - rio >= 0.1.1.0
+- aeson
 - extensible >= 0.4.9
+- wreq
 
 library:
   source-dirs: src

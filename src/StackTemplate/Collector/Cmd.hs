@@ -13,10 +13,10 @@ import           StackTemplate.Collector.Cmd.Run     as X
 
 data Cmd
   = PrintVersion
-  | RunCmd Options
+  | FetchHsfiles Options
   deriving (Show, Eq)
 
 toCmd :: Options -> Cmd
 toCmd opts
   | opts ^. #version = PrintVersion
-  | otherwise        = RunCmd opts
+  | otherwise        = FetchHsfiles opts
