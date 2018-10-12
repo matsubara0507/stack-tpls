@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE MultiWayIf       #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
@@ -6,13 +7,14 @@ module StackTemplate.Collector.Cmd.Run where
 
 import           RIO
 
-import           Data.Aeson                          (toJSON)
+import           Data.Aeson                              (toJSON)
 import           Data.Extensible
-import qualified Network.Wreq                        as W
+import qualified Network.Wreq                            as W
 import           StackTemplate.Collector.Cmd.Options
+import           StackTemplate.Collector.Data.Repository
 import           StackTemplate.Collector.Env
 import           StackTemplate.Collector.Query
-import           System.Environment                  (getEnv)
+import           System.Environment                      (getEnv)
 
 fetchHsfiles :: Options -> IO ()
 fetchHsfiles = run fetchHsfiles'
@@ -21,13 +23,23 @@ fetchHsfiles' :: RIO Env ()
 fetchHsfiles' = do
   logDebug "run: fetch hsfiles"
   let sOpts = #first @= 100 <: #after @= Nothing <: nil
-      query = searchQuery "stack-templates in:name" Repository sOpts
-  logDebug $ "query: " <> display query
-  resp <- fetchHsfilesFromGitHub query
-  logInfo $ displayShow (resp ^. #data ^. #search ^. #repositoryCount)
+  repos <- fetchHsfilesFromGitHub sOpts
+  logInfo $ displayShow repos
 
-fetchHsfilesFromGitHub :: Text -> RIO Env Response
-fetchHsfilesFromGitHub query = do
+fetchHsfilesFromGitHub :: SearchOpts -> RIO Env [Repository]
+fetchHsfilesFromGitHub opts = do
+  let query = searchQuery "stack-templates in:name" Repository opts
+  logDebug $ "query: " <> display query
+  result <- (view #search . view #data) <$> fetchHsfilesFromGitHub' query
+  let page  = result ^. #pageInfo
+      repos = view #node <$> result ^. #edges
+      opts' = opts & #after `set` Just (page ^. #endCursor)
+  if | page ^. #hasNextPage -> (repos <>) <$> fetchHsfilesFromGitHub opts'
+     | otherwise            -> pure repos
+
+
+fetchHsfilesFromGitHub' :: Text -> RIO Env Response
+fetchHsfilesFromGitHub' query = do
   token <- asks (view #gh_token)
   let pOpts = W.defaults & W.header "Authorization" `set` ["bearer " <> token]
       url = "https://api.github.com/graphql"
