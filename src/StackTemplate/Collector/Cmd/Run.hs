@@ -11,6 +11,7 @@ import           Data.Aeson                              (toJSON)
 import           Data.Extensible
 import qualified Network.Wreq                            as W
 import           StackTemplate.Collector.Cmd.Options
+import           StackTemplate.Collector.Data.Hsfiles
 import           StackTemplate.Collector.Data.Repository
 import           StackTemplate.Collector.Env
 import           StackTemplate.Collector.Query
@@ -23,28 +24,34 @@ fetchHsfiles' :: RIO Env ()
 fetchHsfiles' = do
   logDebug "run: fetch hsfiles"
   let sOpts = #first @= 100 <: #after @= Nothing <: nil
-  repos <- fetchHsfilesFromGitHub sOpts
-  logInfo $ displayShow repos
+  repos <- fetchStackTemplatesFromGitHub sOpts
+  mapM_ (logInfo . display . toStackArg) $ filterHsfiles repos
 
-fetchHsfilesFromGitHub :: SearchOpts -> RIO Env [Repository]
-fetchHsfilesFromGitHub opts = do
+fetchStackTemplatesFromGitHub :: SearchOpts -> RIO Env [Repository]
+fetchStackTemplatesFromGitHub opts = do
   let query = searchQuery "stack-templates in:name" Repository opts
   logDebug $ "query: " <> display query
-  result <- (view #search . view #data) <$> fetchHsfilesFromGitHub' query
+  result <- (view #search . view #data) <$> fetchStackTemplatesFromGitHub' query
   let page  = result ^. #pageInfo
       repos = view #node <$> result ^. #edges
       opts' = opts & #after `set` Just (page ^. #endCursor)
-  if | page ^. #hasNextPage -> (repos <>) <$> fetchHsfilesFromGitHub opts'
+  if | page ^. #hasNextPage -> (repos <>) <$> fetchStackTemplatesFromGitHub opts'
      | otherwise            -> pure repos
 
 
-fetchHsfilesFromGitHub' :: Text -> RIO Env Response
-fetchHsfilesFromGitHub' query = do
+fetchStackTemplatesFromGitHub' :: Text -> RIO Env Response
+fetchStackTemplatesFromGitHub' query = do
   token <- asks (view #gh_token)
   let pOpts = W.defaults & W.header "Authorization" `set` ["bearer " <> token]
       url = "https://api.github.com/graphql"
   resp <- liftIO $ W.asJSON =<< W.postWith pOpts url (toJSON $ #query @== query <: nil)
   pure $ resp ^. W.responseBody
+
+filterHsfiles :: [Repository] -> [Hsfiles]
+filterHsfiles = mconcat . map (fromRepository GitHub) . filter isStackTemplates
+
+isStackTemplates :: Repository -> Bool
+isStackTemplates repo = repo ^. #name == "stack-templates"
 
 run :: (MonadUnliftIO m, MonadThrow m) => RIO Env () -> Options -> m ()
 run f opts = do

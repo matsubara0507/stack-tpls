@@ -20,3 +20,6 @@ type TreeEntry = Record
    '[ "name" >: Text
     , "type" >: Text
     ]
+
+isBlob :: TreeEntry -> Bool
+isBlob ent = ent ^. #type == "blob"
