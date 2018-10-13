@@ -1,8 +1,8 @@
 # stack-tpls
 
-Collect all Haskell Stack template files.
+Collect all [Haskell Stack](https://docs.haskellstack.org) template files.
 
-I implemented to collect from only GitHub yet.
+But, I implemented to collect from only GitHub yet.
 
 ## Requirement
 
@@ -15,7 +15,7 @@ $ stack install
 
 ## Usage
 
-Pease set GitHub Personal Token:
+Pease set GitHub Personal Token (can use `.env`):
 
 ```
 GH_TOKEN=xxx
@@ -24,7 +24,7 @@ GH_TOKEN=xxx
 show all stack-templates (in GitHub):
 
 ```
-$ stack-tpls
+$ stack-tpls --list
 github:commercialhaskell/chrisdone.hsfiles
 github:commercialhaskell/foundation.hsfiles
 github:commercialhaskell/franklinchen.hsfiles
@@ -37,11 +37,18 @@ github:commercialhaskell/ghcjs-old-base.hsfiles
 show any hsfiles:
 
 ```
-$ stack-tpls show github:commercialhaskell/rio.hsfiles
+$ stack-tpls github:commercialhaskell/rio.hsfiles
 {-# START_FILE .gitignore #-}
 *.cabal
 *~
  .
  .
  .
+```
+
+or show any link of hsfiles:
+
+```
+$ stack-tpls --link github:commercialhaskell/rio.hsfiles
+https://github.com/commercialhaskell/stack-templates/blob/master/rio.hsfiles
 ```
