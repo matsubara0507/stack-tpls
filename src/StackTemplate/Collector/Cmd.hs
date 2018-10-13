@@ -15,13 +15,15 @@ data Cmd
   = PrintVersion
   | FetchRawHsfiles Text Options
   | FetchAllHsfiles Options
+  | MistakeCmd
   deriving (Show, Eq)
 
 toCmd :: Options -> Cmd
 toCmd opts
-  | opts ^. #version = PrintVersion
-  | isJust txt       = FetchRawHsfiles (fromMaybe "" txt) opts
-  | otherwise        = FetchAllHsfiles opts
+  | opts ^. #version      = PrintVersion
+  | isJust txt            = FetchRawHsfiles (fromMaybe "" txt) opts
+  | null (opts ^. #input) = FetchAllHsfiles opts
+  | otherwise             = MistakeCmd
   where
     txt = getShowCmdName opts
 

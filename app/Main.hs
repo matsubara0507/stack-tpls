@@ -20,17 +20,25 @@ import           Data.Version                   (Version)
 import qualified Data.Version                   as Version
 import           Development.GitRev
 import           StackTemplate.Collector.Cmd
+import           System.Exit                    (exitFailure)
 
 main :: IO ()
-main = withGetOpt "[options] [input-file]" opts $ \r args ->
+main = withGetOpt "[options] [show filename]" opts $ \r args ->
   case toCmd (#input @= args <: r) of
-    PrintVersion              -> B.putStr $ fromString (showVersion version)
+    PrintVersion              -> putStrLn $ showVersion version
     FetchRawHsfiles txt opts' -> fetchRawHsfiles txt opts'
     FetchAllHsfiles opts'     -> fetchAllHsfiles opts'
+    MistakeCmd                -> mistake args
   where
     opts = #version @= versionOpt
         <: #verbose @= verboseOpt
         <: nil
+    mistake args = do
+      putStrLn $ "undefined subcommand: " <> show args
+      exitFailure
+
+putStrLn :: MonadIO m => String -> m ()
+putStrLn str = B.putStr $ fromString (str <> "\n")
 
 showVersion :: Version -> String
 showVersion v = unwords
