@@ -6,6 +6,9 @@
 module StackTemplate.Collector.Cmd.Run where
 
 import           RIO
+import qualified RIO.ByteString                          as B
+import           RIO.Partial                             (fromJust)
+import qualified RIO.Text                                as Text
 
 import           Data.Aeson                              (toJSON)
 import           Data.Extensible
@@ -17,11 +20,11 @@ import           StackTemplate.Collector.Env
 import           StackTemplate.Collector.Query
 import           System.Environment                      (getEnv)
 
-fetchHsfiles :: Options -> IO ()
-fetchHsfiles = run fetchHsfiles'
+fetchAllHsfiles :: Options -> IO ()
+fetchAllHsfiles = run fetchAllHsfiles'
 
-fetchHsfiles' :: RIO Env ()
-fetchHsfiles' = do
+fetchAllHsfiles' :: RIO Env ()
+fetchAllHsfiles' = do
   logDebug "run: fetch hsfiles"
   let sOpts = #first @= 100 <: #after @= Nothing <: nil
   repos <- fetchStackTemplatesFromGitHub sOpts
@@ -38,7 +41,6 @@ fetchStackTemplatesFromGitHub opts = do
   if | page ^. #hasNextPage -> (repos <>) <$> fetchStackTemplatesFromGitHub opts'
      | otherwise            -> pure repos
 
-
 fetchStackTemplatesFromGitHub' :: Text -> RIO Env Response
 fetchStackTemplatesFromGitHub' query = do
   token <- asks (view #gh_token)
@@ -52,6 +54,24 @@ filterHsfiles = mconcat . map (fromRepository GitHub) . filter isStackTemplates
 
 isStackTemplates :: Repository -> Bool
 isStackTemplates repo = repo ^. #name == "stack-templates"
+
+fetchRawHsfiles :: Text -> Options -> IO ()
+fetchRawHsfiles n = run (fetchRawHsfiles' n)
+
+fetchRawHsfiles' :: Text -> RIO Env ()
+fetchRawHsfiles' txt = do
+  let file = readMaybeHsfiles (Text.unpack txt)
+  logDebug $ display ("run: fetch raw hsfiles " <> txt)
+  logDebug $ display ("read: " <> tshow file)
+  if | isJust file -> B.putStr =<< fetchRawHsfilesFrom (toRawUrl $ fromJust file)
+     | otherwise   -> logError $ display ("can't parse input text: " <> txt)
+
+fetchRawHsfilesFrom :: MonadIO m => Text -> m ByteString
+fetchRawHsfilesFrom url = do
+  resp <- liftIO $ W.get (Text.unpack url)
+  let status = resp ^. W.responseStatus . W.statusCode
+  if | status == 200 -> pure . toStrictBytes $ resp ^. W.responseBody
+     | otherwise     -> pure ""
 
 run :: (MonadUnliftIO m, MonadThrow m) => RIO Env () -> Options -> m ()
 run f opts = do

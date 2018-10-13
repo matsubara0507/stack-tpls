@@ -13,10 +13,20 @@ import           StackTemplate.Collector.Cmd.Run     as X
 
 data Cmd
   = PrintVersion
-  | FetchHsfiles Options
+  | FetchRawHsfiles Text Options
+  | FetchAllHsfiles Options
   deriving (Show, Eq)
 
 toCmd :: Options -> Cmd
 toCmd opts
   | opts ^. #version = PrintVersion
-  | otherwise        = FetchHsfiles opts
+  | isJust txt       = FetchRawHsfiles (fromMaybe "" txt) opts
+  | otherwise        = FetchAllHsfiles opts
+  where
+    txt = getShowCmdName opts
+
+getShowCmdName :: Options -> Maybe Text
+getShowCmdName opts =
+  case opts ^. #input of
+    [ "show", txt ] -> Just (fromString txt)
+    _               -> Nothing

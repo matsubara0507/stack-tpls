@@ -5,6 +5,7 @@
 module StackTemplate.Collector.Data.Hsfiles where
 
 import           RIO
+import qualified RIO.List                                as L
 import qualified RIO.Text                                as Text
 
 import           Data.Extensible
@@ -28,6 +29,33 @@ instance Show Domain where
   show GitLab    = "gitlab"
   show BitBucket = "bitbucket"
 
+readMaybeDomain :: String -> Maybe Domain
+readMaybeDomain "github"    = Just GitHub
+readMaybeDomain "gitlab"    = Just GitLab
+readMaybeDomain "bitbucket" = Just BitBucket
+readMaybeDomain _           = Nothing
+
+domains :: [Domain]
+domains = [ GitHub, GitLab, BitBucket ]
+
+readMaybeHsfiles :: String -> Maybe Hsfiles
+readMaybeHsfiles str =
+  if validateHsfiles name owner domain then Just file else Nothing
+  where
+    (domain, str') = L.span (/= ':') str
+    (owner, name)  = L.span (/= '/') str'
+    file = #name   @= fromString (dropWhile (== '/') name)
+        <: #owner  @= fromString (dropWhile (== ':') owner)
+        <: #domain @= fromMaybe GitHub (readMaybeDomain domain)
+        <: nil
+
+validateHsfiles :: String -> String -> String -> Bool
+validateHsfiles name owner domain = and
+  [ case name  of ('/' : _ : _) -> True ; _ -> False
+  , case owner of (':' : _ : _) -> True ; _ -> False
+  , domain `elem` map show domains
+  ]
+
 fromRepository :: Domain -> Repository -> [Hsfiles]
 fromRepository domain repo = flip map files $ \file ->
      #name   @= (file ^. #name)
@@ -35,8 +63,7 @@ fromRepository domain repo = flip map files $ \file ->
   <: #domain @= domain
   <: nil
   where
-    files = filter isHsfiles $
-      maybe [] (view #entries . view #tree) (repo ^. #object)
+    files = filter isHsfiles $ maybe [] (view #entries . view #tree) (repo ^. #object)
 
 isHsfiles :: TreeEntry -> Bool
 isHsfiles ent = isBlob ent && (Text.isSuffixOf ".hsfiles" $ ent ^. #name)
@@ -44,3 +71,10 @@ isHsfiles ent = isBlob ent && (Text.isSuffixOf ".hsfiles" $ ent ^. #name)
 toStackArg :: Hsfiles -> Text
 toStackArg file = mconcat
   [ tshow (file ^. #domain), ":", file ^. #owner, "/", file ^. #name ]
+
+toRawUrl :: Hsfiles -> Text
+toRawUrl file = Text.intercalate "/" $
+  case file ^. #domain of
+    GitHub    -> [ "https://raw.githubusercontent.com", file ^. #owner, "stack-templates/master", file ^. #name ]
+    GitLab    -> [ "https://gitlab.com", file ^. #owner, "stack-templates/raw/master", file ^. #name ]
+    BitBucket -> [ "https://bitbucket.org", file ^. #owner, "stack-templates/raw/master", file ^. #name ]
