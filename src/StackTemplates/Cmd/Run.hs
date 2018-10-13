@@ -53,15 +53,16 @@ isStackTemplates :: Repository -> Bool
 isStackTemplates repo = repo ^. #name == "stack-templates"
 
 fetchRawTpl :: Text -> Options -> IO ()
-fetchRawTpl path = run $ do
+fetchRawTpl path opts = flip run opts $ do
   let file = readMaybeHsfiles (Text.unpack path)
   logDebug $ display ("run: fetch raw hsfiles " <> path)
   logDebug $ display ("read: " <> tshow file)
-  if | isJust file -> B.putStr =<< fetchRawTplFrom (toRawUrl $ fromJust file)
-     | otherwise   -> logError $ display ("can't parse input text: " <> path)
+  if | isNothing file -> logError $ display ("can't parse input text: " <> path)
+     | opts ^. #link  -> logInfo $ display (toUrl $ fromJust file)
+     | otherwise      -> B.putStr =<< fetchRawTplBS (toRawUrl $ fromJust file)
 
-fetchRawTplFrom :: MonadIO m => Text -> m ByteString
-fetchRawTplFrom url = do
+fetchRawTplBS :: MonadIO m => Text -> m ByteString
+fetchRawTplBS url = do
   resp <- liftIO $ W.get (Text.unpack url)
   let status = resp ^. W.responseStatus . W.statusCode
   if | status == 200 -> pure . toStrictBytes $ resp ^. W.responseBody

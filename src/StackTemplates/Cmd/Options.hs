@@ -14,6 +14,7 @@ type Options = Record
    , "version" >: Bool
    , "verbose" >: Bool
    , "list"    >: Bool
+   , "link"    >: Bool
    ]
 
 versionOpt :: OptDescr' Bool
@@ -24,3 +25,6 @@ verboseOpt = optFlag ['v'] ["verbose"] "Enable verbose mode: verbosity level \"d
 
 listOpt :: OptDescr' Bool
 listOpt = optFlag ['l'] ["list"] "List the templates from GitHub"
+
+linkOpt :: OptDescr' Bool
+linkOpt = optFlag [] ["link"] "Show link of any stack template"
