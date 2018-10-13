@@ -25,13 +25,14 @@ import           System.Exit            (exitFailure)
 main :: IO ()
 main = withGetOpt "[options] [show filename]" opts $ \r args ->
   case toCmd (#input @= args <: r) of
-    PrintVersion              -> putStrLn $ showVersion version
-    FetchRawHsfiles txt opts' -> fetchRawHsfiles txt opts'
-    FetchAllHsfiles opts'     -> fetchAllHsfiles opts'
-    MistakeCmd                -> mistake args
+    Just PrintVersion             -> putStrLn $ showVersion version
+    Just (FetchRawTpl path opts') -> fetchRawTpl path opts'
+    Just (FetchTplList opts')     -> fetchTplList opts'
+    Nothing                       -> mistake args
   where
     opts = #version @= versionOpt
         <: #verbose @= verboseOpt
+        <: #list    @= listOpt
         <: nil
     mistake args = do
       putStrLn $ "undefined subcommand: " <> show args

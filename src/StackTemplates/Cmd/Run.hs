@@ -20,54 +20,48 @@ import           StackTemplates.Env
 import           StackTemplates.Query
 import           System.Environment             (getEnv)
 
-fetchAllHsfiles :: Options -> IO ()
-fetchAllHsfiles = run fetchAllHsfiles'
-
-fetchAllHsfiles' :: RIO Env ()
-fetchAllHsfiles' = do
+fetchTplList :: Options -> IO ()
+fetchTplList = run $ do
   logDebug "run: fetch hsfiles"
   let sOpts = #first @= 100 <: #after @= Nothing <: nil
-  repos <- fetchStackTemplatesFromGitHub sOpts
-  mapM_ (logInfo . display . toStackArg) $ filterHsfiles repos
+  repos <- fetchTplListFromGitHub sOpts
+  mapM_ (logInfo . display . toStackArg) $ mapHsfilesWithFilter repos
 
-fetchStackTemplatesFromGitHub :: SearchOpts -> RIO Env [Repository]
-fetchStackTemplatesFromGitHub opts = do
+fetchTplListFromGitHub :: SearchOpts -> RIO Env [Repository]
+fetchTplListFromGitHub opts = do
   let query = searchQuery "stack-templates in:name" Repository opts
   logDebug $ "query: " <> display query
-  result <- (view #search . view #data) <$> fetchStackTemplatesFromGitHub' query
+  result <- (view #search . view #data) <$> postSearchQuery query
   let page  = result ^. #pageInfo
       repos = view #node <$> result ^. #edges
       opts' = opts & #after `set` Just (page ^. #endCursor)
-  if | page ^. #hasNextPage -> (repos <>) <$> fetchStackTemplatesFromGitHub opts'
+  if | page ^. #hasNextPage -> (repos <>) <$> fetchTplListFromGitHub opts'
      | otherwise            -> pure repos
 
-fetchStackTemplatesFromGitHub' :: Text -> RIO Env Response
-fetchStackTemplatesFromGitHub' query = do
+postSearchQuery :: Text -> RIO Env Response
+postSearchQuery query = do
   token <- asks (view #gh_token)
   let pOpts = W.defaults & W.header "Authorization" `set` ["bearer " <> token]
       url = "https://api.github.com/graphql"
   resp <- liftIO $ W.asJSON =<< W.postWith pOpts url (toJSON $ #query @== query <: nil)
   pure $ resp ^. W.responseBody
 
-filterHsfiles :: [Repository] -> [Hsfiles]
-filterHsfiles = mconcat . map (fromRepository GitHub) . filter isStackTemplates
+mapHsfilesWithFilter :: [Repository] -> [Hsfiles]
+mapHsfilesWithFilter = mconcat . map (fromRepository GitHub) . filter isStackTemplates
 
 isStackTemplates :: Repository -> Bool
 isStackTemplates repo = repo ^. #name == "stack-templates"
 
-fetchRawHsfiles :: Text -> Options -> IO ()
-fetchRawHsfiles n = run (fetchRawHsfiles' n)
-
-fetchRawHsfiles' :: Text -> RIO Env ()
-fetchRawHsfiles' txt = do
-  let file = readMaybeHsfiles (Text.unpack txt)
-  logDebug $ display ("run: fetch raw hsfiles " <> txt)
+fetchRawTpl :: Text -> Options -> IO ()
+fetchRawTpl path = run $ do
+  let file = readMaybeHsfiles (Text.unpack path)
+  logDebug $ display ("run: fetch raw hsfiles " <> path)
   logDebug $ display ("read: " <> tshow file)
-  if | isJust file -> B.putStr =<< fetchRawHsfilesFrom (toRawUrl $ fromJust file)
-     | otherwise   -> logError $ display ("can't parse input text: " <> txt)
+  if | isJust file -> B.putStr =<< fetchRawTplFrom (toRawUrl $ fromJust file)
+     | otherwise   -> logError $ display ("can't parse input text: " <> path)
 
-fetchRawHsfilesFrom :: MonadIO m => Text -> m ByteString
-fetchRawHsfilesFrom url = do
+fetchRawTplFrom :: MonadIO m => Text -> m ByteString
+fetchRawTplFrom url = do
   resp <- liftIO $ W.get (Text.unpack url)
   let status = resp ^. W.responseStatus . W.statusCode
   if | status == 200 -> pure . toStrictBytes $ resp ^. W.responseBody

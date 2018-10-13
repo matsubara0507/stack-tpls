@@ -13,22 +13,14 @@ import           StackTemplates.Cmd.Run     as X
 
 data Cmd
   = PrintVersion
-  | FetchRawHsfiles Text Options
-  | FetchAllHsfiles Options
-  | MistakeCmd
+  | FetchTplList Options
+  | FetchRawTpl Text Options
   deriving (Show, Eq)
 
-toCmd :: Options -> Cmd
+toCmd :: Options -> Maybe Cmd
 toCmd opts
-  | opts ^. #version      = PrintVersion
-  | isJust txt            = FetchRawHsfiles (fromMaybe "" txt) opts
-  | null (opts ^. #input) = FetchAllHsfiles opts
-  | otherwise             = MistakeCmd
+  | opts ^. #version = Just PrintVersion
+  | opts ^. #list    = Just $ FetchTplList opts
+  | otherwise        = flip FetchRawTpl opts <$> path
   where
-    txt = getShowCmdName opts
-
-getShowCmdName :: Options -> Maybe Text
-getShowCmdName opts =
-  case opts ^. #input of
-    [ "show", txt ] -> Just (fromString txt)
-    _               -> Nothing
+    path = fromString <$> listToMaybe (opts ^. #input)
