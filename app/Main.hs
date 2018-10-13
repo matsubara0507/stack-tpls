@@ -14,6 +14,7 @@ import           Paths_stack_tpls       (version)
 import           RIO
 import qualified RIO.ByteString         as B
 
+import           Configuration.Dotenv   (defaultConfig, loadFile)
 import           Data.Extensible
 import           Data.Extensible.GetOpt
 import           Data.Version           (Version)
@@ -23,7 +24,8 @@ import           StackTemplates.Cmd
 import           System.Exit            (exitFailure)
 
 main :: IO ()
-main = withGetOpt "[options] [show filename]" opts $ \r args ->
+main = withGetOpt "[options] [show filename]" opts $ \r args -> do
+  loadFile defaultConfig
   case toCmd (#input @= args <: r) of
     Just PrintVersion             -> putStrLn $ showVersion version
     Just (FetchRawTpl path opts') -> fetchRawTpl path opts'

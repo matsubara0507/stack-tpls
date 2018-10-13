@@ -55,6 +55,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - stack-tpls
+    - dotenv
     - gitrev
 
 tests:
