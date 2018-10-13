@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module StackTemplate.Collector.Data.PageInfo where
+module StackTemplates.Data.PageInfo where
 
 import           RIO
 

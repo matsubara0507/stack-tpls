@@ -3,14 +3,14 @@
 {-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module StackTemplate.Collector.Query where
+module StackTemplates.Query where
 
 import           RIO
-import qualified RIO.Text                                as Text
+import qualified RIO.Text                       as Text
 
 import           Data.Extensible
-import           StackTemplate.Collector.Data.PageInfo   (PageInfo)
-import           StackTemplate.Collector.Data.Repository (Repository)
+import           StackTemplates.Data.PageInfo   (PageInfo)
+import           StackTemplates.Data.Repository (Repository)
 
 type Response = Record '[ "data" >: ResponseData ]
 

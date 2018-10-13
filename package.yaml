@@ -1,14 +1,14 @@
-name:                stack-template-collector
+name:                stack-tpls
 version:             0.1.0.0
 #synopsis:
 #description:
-homepage:            https://github.com/matsubara0507/stack-template-collector#readme
+homepage:            https://github.com/matsubara0507/stack-tpls#readme
 license:             MIT
 author:              MATSUBARA Nobutada
 maintainer:          t12307043@gunma-u.ac.jp
 copyright:           MATSUBARA Nobutada
 category:            Web
-description:         Please see the README on GitHub at <https://github.com/matsubara0507/stack-template-collector#readme>
+description:         Please see the README on GitHub at <https://github.com/matsubara0507/stack-tpls#readme>
 
 extra-source-files:
 - README.md
@@ -46,7 +46,7 @@ library:
   source-dirs: src
 
 executables:
-  stack-template-collector:
+  stack-tpls:
     main: Main.hs
     source-dirs: app
     ghc-options:
@@ -54,11 +54,11 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - stack-template-collector
+    - stack-tpls
     - gitrev
 
 tests:
-  stack-template-collector-test:
+  stack-tpls-test:
     main: Driver.hs
     source-dirs: test
     ghc-options:
@@ -66,7 +66,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - stack-template-collector
+    - stack-tpls
     - tasty
     - tasty-hspec
     other-modules: []

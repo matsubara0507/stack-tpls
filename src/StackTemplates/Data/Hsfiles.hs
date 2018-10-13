@@ -2,15 +2,15 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module StackTemplate.Collector.Data.Hsfiles where
+module StackTemplates.Data.Hsfiles where
 
 import           RIO
 import qualified RIO.List                                as L
 import qualified RIO.Text                                as Text
 
 import           Data.Extensible
-import           StackTemplate.Collector.Data.GitObject  (TreeEntry, isBlob)
-import           StackTemplate.Collector.Data.Repository (Repository, getOwner)
+import           StackTemplates.Data.GitObject  (TreeEntry, isBlob)
+import           StackTemplates.Data.Repository (Repository, getOwner)
 
 type Hsfiles = Record
    '[ "name"   >: Text

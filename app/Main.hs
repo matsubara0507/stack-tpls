@@ -10,17 +10,17 @@
 
 module Main where
 
-import           Paths_stack_template_collector (version)
+import           Paths_stack_tpls       (version)
 import           RIO
-import qualified RIO.ByteString                 as B
+import qualified RIO.ByteString         as B
 
 import           Data.Extensible
 import           Data.Extensible.GetOpt
-import           Data.Version                   (Version)
-import qualified Data.Version                   as Version
+import           Data.Version           (Version)
+import qualified Data.Version           as Version
 import           Development.GitRev
-import           StackTemplate.Collector.Cmd
-import           System.Exit                    (exitFailure)
+import           StackTemplates.Cmd
+import           System.Exit            (exitFailure)
 
 main :: IO ()
 main = withGetOpt "[options] [show filename]" opts $ \r args ->

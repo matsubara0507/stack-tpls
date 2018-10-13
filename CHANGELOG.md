@@ -1,3 +1,3 @@
-# Changelog for stack-template-collector
+# Changelog for stack-tpls
 
 ## Unreleased changes

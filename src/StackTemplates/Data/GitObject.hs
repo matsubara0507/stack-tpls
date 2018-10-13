@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module StackTemplate.Collector.Data.GitObject where
+module StackTemplates.Data.GitObject where
 
 import           RIO
 

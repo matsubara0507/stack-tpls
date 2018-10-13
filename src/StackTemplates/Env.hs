@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module StackTemplate.Collector.Env where
+module StackTemplates.Env where
 
 import           RIO
 

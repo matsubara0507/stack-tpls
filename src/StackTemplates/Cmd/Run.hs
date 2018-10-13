@@ -3,22 +3,22 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module StackTemplate.Collector.Cmd.Run where
+module StackTemplates.Cmd.Run where
 
 import           RIO
-import qualified RIO.ByteString                          as B
-import           RIO.Partial                             (fromJust)
-import qualified RIO.Text                                as Text
+import qualified RIO.ByteString                 as B
+import           RIO.Partial                    (fromJust)
+import qualified RIO.Text                       as Text
 
-import           Data.Aeson                              (toJSON)
+import           Data.Aeson                     (toJSON)
 import           Data.Extensible
-import qualified Network.Wreq                            as W
-import           StackTemplate.Collector.Cmd.Options
-import           StackTemplate.Collector.Data.Hsfiles
-import           StackTemplate.Collector.Data.Repository
-import           StackTemplate.Collector.Env
-import           StackTemplate.Collector.Query
-import           System.Environment                      (getEnv)
+import qualified Network.Wreq                   as W
+import           StackTemplates.Cmd.Options
+import           StackTemplates.Data.Hsfiles
+import           StackTemplates.Data.Repository
+import           StackTemplates.Env
+import           StackTemplates.Query
+import           System.Environment             (getEnv)
 
 fetchAllHsfiles :: Options -> IO ()
 fetchAllHsfiles = run fetchAllHsfiles'

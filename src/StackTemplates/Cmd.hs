@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedLabels #-}
 
-module StackTemplate.Collector.Cmd
+module StackTemplates.Cmd
     ( module X
     , Cmd (..)
     , toCmd
@@ -8,8 +8,8 @@ module StackTemplate.Collector.Cmd
 
 import           RIO
 
-import           StackTemplate.Collector.Cmd.Options as X
-import           StackTemplate.Collector.Cmd.Run     as X
+import           StackTemplates.Cmd.Options as X
+import           StackTemplates.Cmd.Run     as X
 
 data Cmd
   = PrintVersion

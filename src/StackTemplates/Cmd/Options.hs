@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module StackTemplate.Collector.Cmd.Options where
+module StackTemplates.Cmd.Options where
 
 import           RIO
 
