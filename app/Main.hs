@@ -13,8 +13,9 @@ module Main where
 import           Paths_stack_tpls       (version)
 import           RIO
 import qualified RIO.ByteString         as B
+import           RIO.Directory
 
-import           Configuration.Dotenv   (defaultConfig, loadFile)
+import           Configuration.Dotenv   (Config (..), defaultConfig, loadFile)
 import           Data.Extensible
 import           Data.Extensible.GetOpt
 import           Data.Version           (Version)
@@ -25,7 +26,9 @@ import           System.Exit            (exitFailure)
 
 main :: IO ()
 main = withGetOpt "[options] [show filename]" opts $ \r args -> do
-  loadFile defaultConfig
+  homeDir <- getHomeDirectory
+  dotenvPaths <- filterM doesFileExist [".env", homeDir ++ "/.env"]
+  _ <- loadFile $ defaultConfig { configPath = dotenvPaths }
   case toCmd (#input @= args <: r) of
     Just PrintVersion             -> putStrLn $ showVersion version
     Just (FetchRawTpl path opts') -> fetchRawTpl path opts'
