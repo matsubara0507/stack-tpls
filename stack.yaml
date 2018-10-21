@@ -2,7 +2,5 @@ resolver: lts-12.12
 packages:
 - .
 extra-deps:
-# - dotenv-0.6.0.2
+- dotenv-0.6.0.3
 - megaparsec-7.0.1
-- github: matsubara0507/dotenv-hs
-  commit: 7ac51a0
