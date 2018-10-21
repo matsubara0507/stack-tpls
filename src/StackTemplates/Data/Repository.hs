@@ -5,7 +5,7 @@
 module StackTemplates.Data.Repository where
 
 import           RIO
-import qualified RIO.Text                               as Text
+import qualified RIO.Text                      as Text
 
 import           Data.Extensible
 import           StackTemplates.Data.GitObject (Commit)
