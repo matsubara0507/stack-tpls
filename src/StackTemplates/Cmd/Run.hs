@@ -7,6 +7,7 @@ module StackTemplates.Cmd.Run where
 
 import           RIO
 import qualified RIO.ByteString                 as B
+import           RIO.Directory                  (doesFileExist)
 import           RIO.Partial                    (fromJust)
 import qualified RIO.Text                       as Text
 
@@ -21,11 +22,29 @@ import           StackTemplates.Query
 import           System.Environment             (getEnv)
 
 fetchTplList :: Options -> IO ()
-fetchTplList = run $ do
+fetchTplList opts = flip run opts $ do
   logDebug "run: fetch hsfiles"
-  let sOpts = #first @= 100 <: #after @= Nothing <: nil
-  repos <- fetchTplListFromGitHub sOpts
-  mapM_ (logInfo . display . toStackArg) $ mapHsfilesWithFilter repos
+  mapM_ (logInfo . display . toStackArg) =<< getTplList (opts ^. #update)
+
+getTplList :: Bool -> RIO Env [Hsfiles]
+getTplList updateFlag = do
+  cacheFile <- cacheTplsListFile
+  isExist   <- doesFileExist cacheFile
+  if | isExist && not updateFlag -> readHsfilesList cacheFile
+     | otherwise                 -> fetchTplListWithUpdateCache cacheFile
+
+readHsfilesList :: MonadIO m => FilePath -> m [Hsfiles]
+readHsfilesList path = do
+  ls <- map Text.unpack . Text.lines <$> readFileUtf8 path
+  pure $ catMaybes (map readMaybeHsfiles ls)
+
+fetchTplListWithUpdateCache :: FilePath -> RIO Env [Hsfiles]
+fetchTplListWithUpdateCache path = do
+  tpls <- mapHsfilesWithFilter <$> fetchTplListFromGitHub sOpts
+  writeFileUtf8 path $ Text.unlines (map toStackArg tpls)
+  pure tpls
+  where
+    sOpts = #first @= 100 <: #after @= Nothing <: nil
 
 fetchTplListFromGitHub :: SearchOpts -> RIO Env [Repository]
 fetchTplListFromGitHub opts = do

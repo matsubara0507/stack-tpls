@@ -15,6 +15,7 @@ type Options = Record
    , "verbose" >: Bool
    , "list"    >: Bool
    , "link"    >: Bool
+   , "update"  >: Bool
    ]
 
 versionOpt :: OptDescr' Bool
@@ -28,3 +29,6 @@ listOpt = optFlag ['l'] ["list"] "List the templates from GitHub"
 
 linkOpt :: OptDescr' Bool
 linkOpt = optFlag [] ["link"] "Show link of any stack template"
+
+updateOpt :: OptDescr' Bool
+updateOpt = optFlag [] ["update"] "Update stack templates list in local cache"

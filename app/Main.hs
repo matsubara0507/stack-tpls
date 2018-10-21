@@ -39,6 +39,7 @@ main = withGetOpt "[options] [show filename]" opts $ \r args -> do
         <: #verbose @= verboseOpt
         <: #list    @= listOpt
         <: #link    @= linkOpt
+        <: #update  @= updateOpt
         <: nil
     mistake args = do
       putStrLn $ "undefined subcommand: " <> show args

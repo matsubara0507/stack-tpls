@@ -6,6 +6,7 @@
 module StackTemplates.Env where
 
 import           RIO
+import           RIO.Directory
 
 import           Data.Extensible
 
@@ -16,3 +17,8 @@ type Env = Record
 
 instance HasLogFunc Env where
   logFuncL = lens (view #logger) (\x y -> x & #logger `set` y)
+
+cacheTplsListFile :: MonadIO m => m FilePath
+cacheTplsListFile = do
+  cacheDir <- getXdgDirectory XdgCache "stack-tpls"
+  pure $ cacheDir ++ "stack-teplates"
