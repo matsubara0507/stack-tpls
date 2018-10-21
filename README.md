@@ -15,7 +15,7 @@ $ stack install
 
 ## Usage
 
-Pease set GitHub Personal Token (can use `.env`):
+Pease set GitHub Personal Token (can use `.env`, `~/.env`):
 
 ```
 GH_TOKEN=xxx
@@ -33,6 +33,9 @@ github:commercialhaskell/ghcjs-old-base.hsfiles
  .
  .
 ```
+
+this list is saved local cache.
+if update local cache, exec `stack-tpls --list --update`.
 
 show any hsfiles:
 
