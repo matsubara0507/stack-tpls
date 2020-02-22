@@ -17,6 +17,7 @@ build v = toBuilder $ unwords
   , "Git revision"
   , GitHash.giCommitDate gi
   , "(" ++ show (GitHash.giCommitCount gi) ++ " commits)"
+  , "\n"
   ]
   where
     gi = $$(GitHash.tGitInfoCwd)
