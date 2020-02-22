@@ -8,8 +8,10 @@ import           RIO.Directory
 import           Data.Extensible
 
 type Env = Record
-  '[ "logger"   >: LogFunc
-   , "gh_token" >: ByteString
+  '[ "logger"      >: LogFunc
+   , "gh_token"    >: ByteString
+   , "with_update" >: Bool
+   , "only_link"   >: Bool
    ]
 
 instance HasLogFunc Env where

@@ -2,12 +2,14 @@ module StackTemplates.Cmd
     ( module X
     , Cmd (..)
     , toCmd
+    , Env
     ) where
 
 import           RIO
 
 import           StackTemplates.Cmd.Options as X
 import           StackTemplates.Cmd.Run     as X
+import           StackTemplates.Env         (Env)
 
 data Cmd
   = PrintVersion

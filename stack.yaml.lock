@@ -32,6 +32,22 @@ packages:
       sha256: 3b593e0d14e848e318e745555776ebb25210e5e3dec4fde5d3c08ab51ceddc62
   original:
     hackage: membership-0
+- completed:
+    size: 8280
+    subdir: mix
+    url: https://github.com/matsubara0507/mix.hs/archive/4978a33dec736799b30c14e215f7fa0f29fa2884.tar.gz
+    cabal-file:
+      size: 1110
+      sha256: 946df4a87070784d7ea659f6a3ad2f346f8cf31fea1135fc342feb5a303fa147
+    name: mix
+    version: 0.1.1
+    sha256: 200ad779113f600d351be1e696d419f4332073dfbe76e5a666b82e17cb7e16d5
+    pantry-tree:
+      size: 598
+      sha256: 689bed307dc233a6c50e01f00295a079dc40a4291700646f3ca423d714ba35fc
+  original:
+    subdir: mix
+    url: https://github.com/matsubara0507/mix.hs/archive/4978a33dec736799b30c14e215f7fa0f29fa2884.tar.gz
 snapshots:
 - completed:
     size: 488576
