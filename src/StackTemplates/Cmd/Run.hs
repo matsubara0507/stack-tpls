@@ -1,8 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE MultiWayIf       #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeOperators    #-}
-
 module StackTemplates.Cmd.Run where
 
 import           RIO
@@ -87,7 +82,7 @@ fetchRawTplBS url = do
   if | status == 200 -> pure . toStrictBytes $ resp ^. W.responseBody
      | otherwise     -> pure ""
 
-run :: (MonadUnliftIO m, MonadThrow m) => RIO Env () -> Options -> m ()
+run :: (MonadUnliftIO m) => RIO Env () -> Options -> m ()
 run f opts = do
   logOpts <- logOptionsHandle stdout (opts ^. #verbose)
   ghToken <- liftIO $ fromString <$> getEnv "GH_TOKEN"

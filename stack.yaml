@@ -1,6 +1,8 @@
-resolver: lts-12.12
+resolver: lts-15.0
 packages:
 - .
 extra-deps:
-- dotenv-0.6.0.3
-- megaparsec-7.0.1
+- dotenv-0.8.0.4
+- megaparsec-8.0.0
+- extensible-0.7.1
+- membership-0

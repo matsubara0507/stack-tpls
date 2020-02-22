@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedLabels #-}
-
 module StackTemplates.Cmd
     ( module X
     , Cmd (..)
@@ -13,6 +11,7 @@ import           StackTemplates.Cmd.Run     as X
 
 data Cmd
   = PrintVersion
+  | PrintHelp
   | FetchTplList Options
   | FetchRawTpl Text Options
   deriving (Show, Eq)
@@ -20,6 +19,7 @@ data Cmd
 toCmd :: Options -> Maybe Cmd
 toCmd opts
   | opts ^. #version = Just PrintVersion
+  | opts ^. #help    = Just PrintHelp
   | opts ^. #list    = Just $ FetchTplList opts
   | otherwise        = flip FetchRawTpl opts <$> path
   where

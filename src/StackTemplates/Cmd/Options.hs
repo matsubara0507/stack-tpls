@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeOperators    #-}
-
 module StackTemplates.Cmd.Options where
 
 import           RIO
@@ -12,6 +8,7 @@ import           Data.Extensible.GetOpt
 type Options = Record
   '[ "input"   >: [String]
    , "version" >: Bool
+   , "help"    >: Bool
    , "verbose" >: Bool
    , "list"    >: Bool
    , "link"    >: Bool
@@ -20,6 +17,9 @@ type Options = Record
 
 versionOpt :: OptDescr' Bool
 versionOpt = optFlag [] ["version"] "Show version"
+
+helpOpt :: OptDescr' Bool
+helpOpt = optFlag ['h'] ["help"] "Show usages"
 
 verboseOpt :: OptDescr' Bool
 verboseOpt = optFlag ['v'] ["verbose"] "Enable verbose mode: verbosity level \"debug\""
