@@ -5,6 +5,6 @@ import           RIO
 import           Data.Extensible
 
 type PageInfo = Record
-   '[ "endCursor"   >: Text
+   '[ "endCursor"   >: Maybe Text
     , "hasNextPage" >: Bool
     ]

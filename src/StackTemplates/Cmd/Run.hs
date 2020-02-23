@@ -47,7 +47,7 @@ fetchTplListFromGitHub opts = do
   result <- view #search . view #data <$> postSearchQuery query
   let page  = result ^. #pageInfo
       repos = view #node <$> result ^. #edges
-      opts' = opts & #after `set` Just (page ^. #endCursor)
+      opts' = opts & #after `set` (page ^. #endCursor)
   if | page ^. #hasNextPage -> (repos <>) <$> fetchTplListFromGitHub opts'
      | otherwise            -> pure repos
 
