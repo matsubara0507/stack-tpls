@@ -10,4 +10,7 @@
   - use githash instead of gitrev
 - Refactor: use mix.hs
 - CI: add GitHub Actions config
-- Refactor: with HLint v2.2.11 
+- Refactor: with HLint v2.2.11
+- Fix: use `(</>)` to construct cache path
+- Fix: create cache dir when get cache path
+- Fix: type of GitHub API response field `endCursor` to nullable
