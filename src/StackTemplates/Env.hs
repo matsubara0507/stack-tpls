@@ -2,6 +2,7 @@ module StackTemplates.Env where
 
 import           RIO
 import           RIO.Directory
+import           RIO.FilePath
 
 import           Data.Extensible
 import           Mix.Plugin.Logger ()
@@ -17,4 +18,4 @@ type Env = Record
 cacheTplsListFile :: MonadIO m => m FilePath
 cacheTplsListFile = do
   cacheDir <- getXdgDirectory XdgCache "stack-tpls"
-  pure $ cacheDir ++ "stack-teplates"
+  pure $ cacheDir </> "stack-teplates"
