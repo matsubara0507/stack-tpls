@@ -18,4 +18,5 @@ type Env = Record
 cacheTplsListFile :: MonadIO m => m FilePath
 cacheTplsListFile = do
   cacheDir <- getXdgDirectory XdgCache "stack-tpls"
+  createDirectoryIfMissing True cacheDir
   pure $ cacheDir </> "stack-teplates"
