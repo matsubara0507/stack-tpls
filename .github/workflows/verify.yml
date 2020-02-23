@@ -33,3 +33,11 @@ jobs:
 
     - name: Build application
       run: stack build
+
+    - name: Exec application
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        stack exec -- stack-tpls --help
+        stack exec -- stack-tpls --list
+        stack exec -- stack-tpls github:matsubara0507/mix-cli.hsfiles
