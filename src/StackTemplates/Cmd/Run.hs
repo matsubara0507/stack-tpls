@@ -30,7 +30,7 @@ getTplList updateFlag = do
 readHsfilesList :: MonadIO m => FilePath -> m [Hsfiles]
 readHsfilesList path = do
   ls <- map Text.unpack . Text.lines <$> readFileUtf8 path
-  pure $ catMaybes (map readMaybeHsfiles ls)
+  pure $ mapMaybe readMaybeHsfiles ls
 
 fetchTplListWithUpdateCache :: FilePath -> RIO Env [Hsfiles]
 fetchTplListWithUpdateCache path = do
@@ -44,7 +44,7 @@ fetchTplListFromGitHub :: SearchOpts -> RIO Env [Repository]
 fetchTplListFromGitHub opts = do
   let query = searchQuery "stack-templates in:name" Repository opts
   logDebug $ "query: " <> display query
-  result <- (view #search . view #data) <$> postSearchQuery query
+  result <- view #search . view #data <$> postSearchQuery query
   let page  = result ^. #pageInfo
       repos = view #node <$> result ^. #edges
       opts' = opts & #after `set` Just (page ^. #endCursor)

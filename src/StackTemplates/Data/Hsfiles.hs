@@ -36,7 +36,7 @@ domains = [ GitHub, GitLab, BitBucket ]
 
 readMaybeHsfiles :: String -> Maybe Hsfiles
 readMaybeHsfiles str =
-  if validateHsfiles name owner domain then Just file else Nothing
+  if validateHsfiles owner name domain then Just file else Nothing
   where
     (domain, str') = L.span (/= ':') str
     (owner, name)  = L.span (/= '/') str'
@@ -46,11 +46,10 @@ readMaybeHsfiles str =
         <: nil
 
 validateHsfiles :: String -> String -> String -> Bool
-validateHsfiles name owner domain = and
-  [ case name  of ('/' : _ : _) -> True ; _ -> False
-  , case owner of (':' : _ : _) -> True ; _ -> False
-  , domain `elem` map show domains
-  ]
+validateHsfiles owner name domain =
+  case (owner, name) of
+    (':':_:_, '/':_:_) -> domain `elem` map show domains
+    _                  -> False
 
 fromRepository :: Domain -> Repository -> [Hsfiles]
 fromRepository domain repo = flip map files $ \file ->
@@ -62,7 +61,7 @@ fromRepository domain repo = flip map files $ \file ->
     files = filter isHsfiles $ maybe [] (view #entries . view #tree) (repo ^. #object)
 
 isHsfiles :: TreeEntry -> Bool
-isHsfiles ent = isBlob ent && (Text.isSuffixOf ".hsfiles" $ ent ^. #name)
+isHsfiles ent = isBlob ent && Text.isSuffixOf ".hsfiles" (ent ^. #name)
 
 toStackArg :: Hsfiles -> Text
 toStackArg file = mconcat
