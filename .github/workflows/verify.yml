@@ -32,12 +32,12 @@ jobs:
       run: stack build --only-dependencies
 
     - name: Build application
-      run: stack build
+      run: stack install
 
     - name: Exec application
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        stack exec -- stack-tpls --help
-        stack exec -- stack-tpls --list
-        stack exec -- stack-tpls github:matsubara0507/mix-cli.hsfiles
+        stack-tpls --help
+        stack-tpls --list
+        stack-tpls github:matsubara0507/mix-cli.hsfiles
