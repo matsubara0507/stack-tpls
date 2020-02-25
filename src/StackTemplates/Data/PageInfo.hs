@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeOperators    #-}
-
 module StackTemplates.Data.PageInfo where
 
 import           RIO
@@ -9,6 +5,6 @@ import           RIO
 import           Data.Extensible
 
 type PageInfo = Record
-   '[ "endCursor"   >: Text
+   '[ "endCursor"   >: Maybe Text
     , "hasNextPage" >: Bool
     ]

@@ -1,58 +1,48 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE LambdaCase            #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedLabels      #-}
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE TypeOperators         #-}
-
 module Main where
 
-import           Paths_stack_tpls       (version)
+import           Paths_stack_tpls     (version)
 import           RIO
-import qualified RIO.ByteString         as B
 import           RIO.Directory
 
-import           Configuration.Dotenv   (Config (..), defaultConfig, loadFile)
+import           Configuration.Dotenv (Config (..), defaultConfig, loadFile)
 import           Data.Extensible
-import           Data.Extensible.GetOpt
-import           Data.Version           (Version)
-import qualified Data.Version           as Version
-import           Development.GitRev
+import           GetOpt               (withGetOpt')
+import           Mix
+import           Mix.Plugin.Logger    as MixLogger
 import           StackTemplates.Cmd
-import           System.Exit            (exitFailure)
+import           System.Environment   (getEnv)
+import           Version
 
 main :: IO ()
-main = withGetOpt "[options] [show filename]" opts $ \r args -> do
+main = withGetOpt' "[options] [show filename]" opts $ \r args usage -> do
   homeDir <- getHomeDirectory
   dotenvPaths <- filterM doesFileExist [".env", homeDir ++ "/.env"]
   _ <- loadFile $ defaultConfig { configPath = dotenvPaths }
   case toCmd (#input @= args <: r) of
-    Just PrintVersion             -> putStrLn $ showVersion version
-    Just (FetchRawTpl path opts') -> fetchRawTpl path opts'
-    Just (FetchTplList opts')     -> fetchTplList opts'
+    Just PrintVersion             -> hPutBuilder stdout (Version.build version)
+    Just PrintHelp                -> hPutBuilder stdout (fromString usage)
+    Just (FetchRawTpl path opts') -> Mix.run (toPlugin opts') (fetchRawTpl path)
+    Just (FetchTplList opts')     -> Mix.run (toPlugin opts') fetchTplList
     Nothing                       -> mistake args
   where
     opts = #version @= versionOpt
+        <: #help    @= helpOpt
         <: #verbose @= verboseOpt
         <: #list    @= listOpt
         <: #link    @= linkOpt
         <: #update  @= updateOpt
         <: nil
     mistake args = do
-      putStrLn $ "undefined subcommand: " <> show args
+      hPutBuilder stdout
+        (fromString $ "undefined subcommand: " <> show args <> "\n")
       exitFailure
 
-putStrLn :: MonadIO m => String -> m ()
-putStrLn str = B.putStr $ fromString (str <> "\n")
-
-showVersion :: Version -> String
-showVersion v = unwords
-  [ "Version"
-  , Version.showVersion v ++ ","
-  , "Git revision"
-  , $(gitHash)
-  , "(" ++ $(gitCommitCount) ++ " commits)"
-  ]
+toPlugin :: MonadUnliftIO m => Options -> Mix.Plugin () m Env
+toPlugin opts = hsequence
+   $ #logger      <@=> MixLogger.buildPlugin logOpts
+  <: #gh_token    <@=> liftIO (fromString <$> getEnv "GH_TOKEN")
+  <: #with_update <@=> pure (opts ^. #update)
+  <: #only_link   <@=> pure (opts ^. #link)
+  <: nil
+  where
+    logOpts = #handle @= stdout <: #verbose @= opts ^. #verbose <: nil

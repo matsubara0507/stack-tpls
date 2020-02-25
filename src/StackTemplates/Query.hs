@@ -1,8 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeOperators    #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 module StackTemplates.Query where
 
 import           RIO

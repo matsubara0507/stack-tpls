@@ -1,7 +1,5 @@
 name:                stack-tpls
-version:             1.0.0.0
-#synopsis:
-#description:
+version:             2.0.0
 homepage:            https://github.com/matsubara0507/stack-tpls#readme
 license:             MIT
 author:              MATSUBARA Nobutada
@@ -25,21 +23,27 @@ default-extensions:
 - NoImplicitPrelude
 
 - ConstraintKinds
+- DataKinds
 - FlexibleContexts
 - FlexibleInstances
 - GeneralizedNewtypeDeriving
+- LambdaCase
+- MultiWayIf
+- OverloadedLabels
 - OverloadedStrings
 - PolyKinds
 - RankNTypes
 - StandaloneDeriving
 - TypeFamilies
 - TypeSynonymInstances
+- TypeOperators
 
 dependencies:
+- aeson
 - base >= 4.7 && < 5
 - rio >= 0.1.1.0
-- aeson
-- extensible >= 0.4.9
+- extensible >= 0.6
+- mix
 - wreq
 
 library:
@@ -49,25 +53,7 @@ executables:
   stack-tpls:
     main: Main.hs
     source-dirs: app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
     dependencies:
     - stack-tpls
     - dotenv
-    - gitrev
-
-tests:
-  stack-tpls-test:
-    main: Driver.hs
-    source-dirs: test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - stack-tpls
-    - tasty
-    - tasty-hspec
-    other-modules: []
+    - githash

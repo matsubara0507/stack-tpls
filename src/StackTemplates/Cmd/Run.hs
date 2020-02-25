@@ -1,8 +1,3 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE MultiWayIf       #-}
-{-# LANGUAGE OverloadedLabels #-}
-{-# LANGUAGE TypeOperators    #-}
-
 module StackTemplates.Cmd.Run where
 
 import           RIO
@@ -14,17 +9,16 @@ import qualified RIO.Text                       as Text
 import           Data.Aeson                     (toJSON)
 import           Data.Extensible
 import qualified Network.Wreq                   as W
-import           StackTemplates.Cmd.Options
 import           StackTemplates.Data.Hsfiles
 import           StackTemplates.Data.Repository
 import           StackTemplates.Env
 import           StackTemplates.Query
-import           System.Environment             (getEnv)
 
-fetchTplList :: Options -> IO ()
-fetchTplList opts = flip run opts $ do
+fetchTplList :: RIO Env ()
+fetchTplList = do
   logDebug "run: fetch hsfiles"
-  mapM_ (logInfo . display . toStackArg) =<< getTplList (opts ^. #update)
+  withUpdate <- asks (view #with_update)
+  mapM_ (logInfo . display . toStackArg) =<< getTplList withUpdate
 
 getTplList :: Bool -> RIO Env [Hsfiles]
 getTplList updateFlag = do
@@ -36,7 +30,7 @@ getTplList updateFlag = do
 readHsfilesList :: MonadIO m => FilePath -> m [Hsfiles]
 readHsfilesList path = do
   ls <- map Text.unpack . Text.lines <$> readFileUtf8 path
-  pure $ catMaybes (map readMaybeHsfiles ls)
+  pure $ mapMaybe readMaybeHsfiles ls
 
 fetchTplListWithUpdateCache :: FilePath -> RIO Env [Hsfiles]
 fetchTplListWithUpdateCache path = do
@@ -50,10 +44,10 @@ fetchTplListFromGitHub :: SearchOpts -> RIO Env [Repository]
 fetchTplListFromGitHub opts = do
   let query = searchQuery "stack-templates in:name" Repository opts
   logDebug $ "query: " <> display query
-  result <- (view #search . view #data) <$> postSearchQuery query
+  result <- view #search . view #data <$> postSearchQuery query
   let page  = result ^. #pageInfo
       repos = view #node <$> result ^. #edges
-      opts' = opts & #after `set` Just (page ^. #endCursor)
+      opts' = opts & #after `set` (page ^. #endCursor)
   if | page ^. #hasNextPage -> (repos <>) <$> fetchTplListFromGitHub opts'
      | otherwise            -> pure repos
 
@@ -71,13 +65,14 @@ mapHsfilesWithFilter = mconcat . map (fromRepository GitHub) . filter isStackTem
 isStackTemplates :: Repository -> Bool
 isStackTemplates repo = repo ^. #name == "stack-templates"
 
-fetchRawTpl :: Text -> Options -> IO ()
-fetchRawTpl path opts = flip run opts $ do
+fetchRawTpl :: Text -> RIO Env ()
+fetchRawTpl path = do
   let file = readMaybeHsfiles (Text.unpack path)
   logDebug $ display ("run: fetch raw hsfiles " <> path)
   logDebug $ display ("read: " <> tshow file)
+  onlyLink <- asks (view #only_link)
   if | isNothing file -> logError $ display ("can't parse input text: " <> path)
-     | opts ^. #link  -> logInfo $ display (toUrl $ fromJust file)
+     | onlyLink       -> logInfo $ display (toUrl $ fromJust file)
      | otherwise      -> B.putStr =<< fetchRawTplBS (toRawUrl $ fromJust file)
 
 fetchRawTplBS :: MonadIO m => Text -> m ByteString
@@ -86,16 +81,6 @@ fetchRawTplBS url = do
   let status = resp ^. W.responseStatus . W.statusCode
   if | status == 200 -> pure . toStrictBytes $ resp ^. W.responseBody
      | otherwise     -> pure ""
-
-run :: (MonadUnliftIO m, MonadThrow m) => RIO Env () -> Options -> m ()
-run f opts = do
-  logOpts <- logOptionsHandle stdout (opts ^. #verbose)
-  ghToken <- liftIO $ fromString <$> getEnv "GH_TOKEN"
-  withLogFunc logOpts $ \logger -> do
-    let env = #logger   @= logger
-           <: #gh_token @= ghToken
-           <: nil
-    runRIO env f
 
 showNotImpl :: MonadIO m => m ()
 showNotImpl = hPutBuilder stdout "not yet implement command."
