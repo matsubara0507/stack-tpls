@@ -1,6 +1,6 @@
 # Changelog for stack-tpls
 
-## Unreleased changes
+## 2.0.0
 
 - Misc: update LTS to 15.0 (GHC 8.8)
 - Misc: update deps packages
@@ -14,3 +14,5 @@
 - Fix: use `(</>)` to construct cache path
 - Fix: create cache dir when get cache path
 - Fix: type of GitHub API response field `endCursor` to nullable
+
+## Unreleased changes
