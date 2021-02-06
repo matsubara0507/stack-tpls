@@ -36,15 +36,12 @@ jobs:
         stack-version: 'latest'
 
     - name: Install dependencies
-      run: stack build --only-dependencies
-
-    - name: Build application
-      run: stack install
+      run: stack build --system-ghc --only-dependencies
 
     - name: Exec application
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        stack-tpls --help
-        stack-tpls --list
-        stack-tpls github:matsubara0507/mix-cli.hsfiles
+        stack exec --system-ghc -- stack-tpls --help
+        stack exec --system-ghc -- stack-tpls --list
+        stack exec --system-ghc -- stack-tpls github:matsubara0507/mix-cli.hsfiles
