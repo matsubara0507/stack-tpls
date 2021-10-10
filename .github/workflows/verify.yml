@@ -13,22 +13,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, windows-2019]
-        ghc: ["8.10.3"]
+        os: [ubuntu-20.04, windows-2019]
+        ghc: ["8.10.7"]
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Cache .stack
       id: cache-stack
-      uses: actions/cache@v1.1.2
+      uses: actions/cache@v2.1.6
       with:
         path: ~/.stack
         key: ${{ runner.os }}-stack-${{ hashFiles('**/package.yaml') }}-${{ hashFiles('**/stack.yaml.lock') }}
         restore-keys: |
           ${{ runner.os }}-stack-
 
-    - uses: haskell/actions/setup@v1.1.7
+    - uses: haskell/actions/setup@v1.2.6
       name: Setup Haskell
       with:
         ghc-version: ${{ matrix.ghc }}

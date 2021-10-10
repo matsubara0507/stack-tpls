@@ -5,19 +5,19 @@
 
 packages:
 - completed:
-    hackage: extensible-0.8.1@sha256:280840e31d92510b342d6a8d82d7af39cfd250194f9c26fca1d5cd406ee206f6,2946
+    hackage: extensible-0.8.2@sha256:f3e7497709199034222e10ba45d3730e21155fb89159ccf1fb0b55f1d7d02697,2963
     pantry-tree:
-      size: 2097
-      sha256: 49d78392bc6da683fe08b01b7e513b5eb471df1b8157616ca4d9dad0a9a23d3d
+      size: 2041
+      sha256: 29d9d1cfb1c5348141f859e74739d212d3c5af9ff0ec359e3f66f872d4be8bc6
   original:
-    hackage: extensible-0.8.1
+    hackage: extensible-0.8.2
 - completed:
-    hackage: membership-0@sha256:3a11d8fd53cb1a76bb9273e6c929bbf9d649f109714bf487abb3143be04ddc81,995
+    hackage: membership-0.0.1@sha256:6c4d4ab6e3fb3253c6c670e8a63f74454dc91be50b9f292d0b1355792190aee5,999
     pantry-tree:
       size: 408
-      sha256: 3b593e0d14e848e318e745555776ebb25210e5e3dec4fde5d3c08ab51ceddc62
+      sha256: b918a1a207108313b2bf453b0d9aa65122d9845c4b360c8ade46d3429ff1107a
   original:
-    hackage: membership-0
+    hackage: membership-0.0.1
 - completed:
     hackage: incremental-0.3.1@sha256:9c697bae4f7e5ceb144bde13e03ca2f36b4bc2d0c92bbc02e0a604231ee279c2,1153
     pantry-tree:
@@ -40,7 +40,7 @@ packages:
     url: https://github.com/matsubara0507/mix.hs/archive/75714be080db16f6a4f9d0a22e86947ffcdadc57.tar.gz
 snapshots:
 - completed:
-    size: 563098
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/1.yaml
-    sha256: 395775c03e66a4286f134d50346b0b6f1432131cf542886252984b4cfa5fef69
-  original: lts-17.1
+    size: 586268
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/13.yaml
+    sha256: d9e658a22cfe8d87a64fdf219885f942fef5fe2bcb156a9800174911c5da2443
+  original: lts-18.13
