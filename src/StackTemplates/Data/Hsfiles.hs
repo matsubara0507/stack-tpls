@@ -26,24 +26,24 @@ instance Show Domain where
   show GitLab    = "gitlab"
   show BitBucket = "bitbucket"
 
-readMaybeDomain :: String -> Maybe Domain
-readMaybeDomain "github"    = Just GitHub
-readMaybeDomain "gitlab"    = Just GitLab
-readMaybeDomain "bitbucket" = Just BitBucket
-readMaybeDomain _           = Nothing
+parseDomain :: String -> Maybe Domain
+parseDomain "github"    = Just GitHub
+parseDomain "gitlab"    = Just GitLab
+parseDomain "bitbucket" = Just BitBucket
+parseDomain _           = Nothing
 
 domains :: [Domain]
 domains = [ GitHub, GitLab, BitBucket ]
 
-readMaybeHsfiles :: String -> Maybe Hsfiles
-readMaybeHsfiles str =
+parseHsfiles :: String -> Maybe Hsfiles
+parseHsfiles str =
   if validateHsfiles owner name domain then Just file else Nothing
   where
     (domain, str') = L.span (/= ':') str
     (owner, name)  = L.span (/= '/') str'
     file = #name   @= fromString (dropWhile (== '/') name)
         <: #owner  @= fromString (dropWhile (== ':') owner)
-        <: #domain @= fromMaybe GitHub (readMaybeDomain domain)
+        <: #domain @= fromMaybe GitHub (parseDomain domain)
         <: nil
 
 validateHsfiles :: String -> String -> String -> Bool

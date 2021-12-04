@@ -26,7 +26,7 @@ getTplList updateFlag = do
 readHsfilesList :: MonadIO m => FilePath -> m [Hsfiles]
 readHsfilesList path = do
   ls <- map Text.unpack . Text.lines <$> readFileUtf8 path
-  pure $ mapMaybe readMaybeHsfiles ls
+  pure $ mapMaybe parseHsfiles ls
 
 fetchTplListWithUpdateCache :: FilePath -> RIO Env [Hsfiles]
 fetchTplListWithUpdateCache path = do
@@ -52,7 +52,7 @@ fetchRawTpl :: Text -> RIO Env ()
 fetchRawTpl path = do
   logDebug $ display ("run: fetch raw hsfiles " <> path)
   onlyLink <- asks (view #only_link)
-  case readMaybeHsfiles (Text.unpack path) of
+  case parseHsfiles (Text.unpack path) of
     Nothing              -> logError $ display ("can't parse input text: " <> path)
     Just file | onlyLink -> logInfo $ display (toUrl file)
     Just file            -> B.putStr =<< fetchRawTplBS file
