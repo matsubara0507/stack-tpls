@@ -38,6 +38,27 @@ packages:
   original:
     subdir: mix
     url: https://github.com/matsubara0507/mix.hs/archive/75714be080db16f6a4f9d0a22e86947ffcdadc57.tar.gz
+- completed:
+    hackage: morpheus-graphql-client-0.18.0@sha256:1e80de25747c9d7ae029483f1ef7639237900ea80976b66fb606fabc08b23046,3859
+    pantry-tree:
+      size: 3735
+      sha256: 1b07db4e5ffcf85107ef3262a37acfae1601c05dab4331821ca0478f05a12c5f
+  original:
+    hackage: morpheus-graphql-client-0.18.0
+- completed:
+    hackage: morpheus-graphql-code-gen-0.18.0@sha256:c806d4c1d35865b1497fe380625f22f64848136a8d010d916f62ade0b5cb0bd5,2384
+    pantry-tree:
+      size: 1095
+      sha256: 25a4c6f8e546f5634b43bf297f257434ded74a3209c5885d59b4415d08c7c4eb
+  original:
+    hackage: morpheus-graphql-code-gen-0.18.0
+- completed:
+    hackage: morpheus-graphql-core-0.18.0@sha256:dcd144af1e9e16a09deb911643545e0c46486b8a16b5d0d612d2df926a78bf51,13878
+    pantry-tree:
+      size: 19197
+      sha256: 1d4f1a5f35a07f00399bb0fffbc741c651984d17a360b6ad9789ebb4fd78b12a
+  original:
+    hackage: morpheus-graphql-core-0.18.0
 snapshots:
 - completed:
     size: 586268
