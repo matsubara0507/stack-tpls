@@ -1,5 +1,7 @@
 # Changelog for stack-tpls
 
+- Refactor: use morpheus-graphql
+
 ## 2.0.0
 
 - Misc: update LTS to 15.0 (GHC 8.8)

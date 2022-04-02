@@ -9,3 +9,6 @@ extra-deps:
   commit: 75714be080db16f6a4f9d0a22e86947ffcdadc57
   subdirs:
   - mix
+- morpheus-graphql-client-0.18.0
+- morpheus-graphql-code-gen-0.18.0
+- morpheus-graphql-core-0.18.0

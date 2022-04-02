@@ -1,12 +1,13 @@
 module StackTemplates.Data.Hsfiles where
 
 import           RIO
-import qualified RIO.List                       as L
-import qualified RIO.Text                       as Text
+import qualified RIO.List                      as L
+import qualified RIO.Text                      as Text
 
 import           Data.Extensible
-import           StackTemplates.Data.GitObject  (TreeEntry, isBlob)
-import           StackTemplates.Data.Repository (Repository, getOwner)
+import           Network.HTTP.Req              (https, (/:))
+import qualified Network.HTTP.Req              as Req
+import qualified StackTemplates.GitHub.GraphQL as GitHub
 
 type Hsfiles = Record
    '[ "name"   >: Text
@@ -25,24 +26,24 @@ instance Show Domain where
   show GitLab    = "gitlab"
   show BitBucket = "bitbucket"
 
-readMaybeDomain :: String -> Maybe Domain
-readMaybeDomain "github"    = Just GitHub
-readMaybeDomain "gitlab"    = Just GitLab
-readMaybeDomain "bitbucket" = Just BitBucket
-readMaybeDomain _           = Nothing
+parseDomain :: String -> Maybe Domain
+parseDomain "github"    = Just GitHub
+parseDomain "gitlab"    = Just GitLab
+parseDomain "bitbucket" = Just BitBucket
+parseDomain _           = Nothing
 
 domains :: [Domain]
 domains = [ GitHub, GitLab, BitBucket ]
 
-readMaybeHsfiles :: String -> Maybe Hsfiles
-readMaybeHsfiles str =
+parseHsfiles :: String -> Maybe Hsfiles
+parseHsfiles str =
   if validateHsfiles owner name domain then Just file else Nothing
   where
     (domain, str') = L.span (/= ':') str
     (owner, name)  = L.span (/= '/') str'
     file = #name   @= fromString (dropWhile (== '/') name)
         <: #owner  @= fromString (dropWhile (== ':') owner)
-        <: #domain @= fromMaybe GitHub (readMaybeDomain domain)
+        <: #domain @= fromMaybe GitHub (parseDomain domain)
         <: nil
 
 validateHsfiles :: String -> String -> String -> Bool
@@ -51,17 +52,17 @@ validateHsfiles owner name domain =
     (':':_:_, '/':_:_) -> domain `elem` map show domains
     _                  -> False
 
-fromRepository :: Domain -> Repository -> [Hsfiles]
-fromRepository domain repo = flip map files $ \file ->
-     #name   @= (file ^. #name)
-  <: #owner  @= getOwner repo
+fromRepository :: Domain -> GitHub.Repository -> [Hsfiles]
+fromRepository domain repo = files <&> \file ->
+     #name   @= GitHub.getTreeName file
+  <: #owner  @= GitHub.getOwner repo
   <: #domain @= domain
   <: nil
   where
-    files = filter isHsfiles $ maybe [] (view #entries . view #tree) (repo ^. #object)
+    files = filter isHsfiles $ maybe [] GitHub.unTreeEntry (repo ^. #object)
 
-isHsfiles :: TreeEntry -> Bool
-isHsfiles ent = isBlob ent && Text.isSuffixOf ".hsfiles" (ent ^. #name)
+isHsfiles :: GitHub.TreeEntry -> Bool
+isHsfiles ent = GitHub.isBlob ent && GitHub.hasExt ".hsfiles" ent
 
 toStackArg :: Hsfiles -> Text
 toStackArg file = mconcat
@@ -73,6 +74,13 @@ toRawUrl file = Text.intercalate "/" $
     GitHub    -> [ "https://raw.githubusercontent.com", file ^. #owner, "stack-templates/master", file ^. #name ]
     GitLab    -> [ "https://gitlab.com", file ^. #owner, "stack-templates/raw/master", file ^. #name ]
     BitBucket -> [ "https://bitbucket.org", file ^. #owner, "stack-templates/raw/master", file ^. #name ]
+
+toRawUrl' :: Hsfiles -> Req.Url 'Req.Https
+toRawUrl' file =
+  case file ^. #domain of
+    GitHub    -> https "raw.githubusercontent.com" /: (file ^. #owner) /: "stack-templates" /: "master" /: (file ^. #name)
+    GitLab    -> https "gitlab.com" /: (file ^. #owner) /: "stack-templates" /: "raw" /: "master" /: (file ^. #name)
+    BitBucket -> https "bitbucket.org" /: (file ^. #owner) /: "stack-templates" /: "raw" /: "master" /: (file ^. #name)
 
 toUrl :: Hsfiles -> Text
 toUrl file = Text.intercalate "/" $
