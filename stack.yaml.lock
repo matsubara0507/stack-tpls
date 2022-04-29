@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: extensible-0.8.2@sha256:f3e7497709199034222e10ba45d3730e21155fb89159ccf1fb0b55f1d7d02697,2963
+    hackage: extensible-0.8.3@sha256:2886978a81e9c2ff29a93caf7ae847a8b7724dc4ee22381c5d29ca8318c686c4,2955
     pantry-tree:
       size: 2041
-      sha256: 29d9d1cfb1c5348141f859e74739d212d3c5af9ff0ec359e3f66f872d4be8bc6
+      sha256: 670fd3807d351e2668eb7c10d926c24501ef190e49e4a4624acc822b09b257b4
   original:
-    hackage: extensible-0.8.2
+    hackage: extensible-0.8.3
 - completed:
     hackage: membership-0.0.1@sha256:6c4d4ab6e3fb3253c6c670e8a63f74454dc91be50b9f292d0b1355792190aee5,999
     pantry-tree:
@@ -26,42 +26,42 @@ packages:
   original:
     hackage: incremental-0.3.1
 - completed:
-    size: 11913
+    size: 12123
     subdir: mix
-    url: https://github.com/matsubara0507/mix.hs/archive/75714be080db16f6a4f9d0a22e86947ffcdadc57.tar.gz
+    url: https://github.com/matsubara0507/mix.hs/archive/9bcd386526fe10a025a23e951c2de86b05129b17.tar.gz
     name: mix
     version: 0.1.1
-    sha256: c4aa501c544ab35a214e7b07f2f97fb19de644f48874c8d6838809bcf4d8edb9
+    sha256: e6ddd7f45a74d368fede8656194fbf1dd9928a903852500c3c2cd4985d821649
     pantry-tree:
-      size: 598
-      sha256: 689bed307dc233a6c50e01f00295a079dc40a4291700646f3ca423d714ba35fc
+      size: 663
+      sha256: c1ead54fea3c786e356dadde2301de201599c10e18bc0be32aa8a2e3569930aa
   original:
     subdir: mix
-    url: https://github.com/matsubara0507/mix.hs/archive/75714be080db16f6a4f9d0a22e86947ffcdadc57.tar.gz
+    url: https://github.com/matsubara0507/mix.hs/archive/9bcd386526fe10a025a23e951c2de86b05129b17.tar.gz
 - completed:
-    hackage: morpheus-graphql-client-0.18.0@sha256:1e80de25747c9d7ae029483f1ef7639237900ea80976b66fb606fabc08b23046,3859
+    hackage: morpheus-graphql-client-0.19.3@sha256:148faf1957706f4d075c02dd744000a56e3e66bd7744287f298c5bfd91cb2c5f,3928
     pantry-tree:
-      size: 3735
-      sha256: 1b07db4e5ffcf85107ef3262a37acfae1601c05dab4331821ca0478f05a12c5f
+      size: 3905
+      sha256: 5eae16d83e0f088c77e9976471059b195704d3e6618e7e10cafd6d983014a812
   original:
-    hackage: morpheus-graphql-client-0.18.0
+    hackage: morpheus-graphql-client-0.19.3
 - completed:
-    hackage: morpheus-graphql-code-gen-0.18.0@sha256:c806d4c1d35865b1497fe380625f22f64848136a8d010d916f62ade0b5cb0bd5,2384
+    hackage: morpheus-graphql-code-gen-0.19.3@sha256:1c091f26e5df356e803c8c7f246901c02837556bd3a4183d35f7226032427c8b,2307
     pantry-tree:
-      size: 1095
-      sha256: 25a4c6f8e546f5634b43bf297f257434ded74a3209c5885d59b4415d08c7c4eb
+      size: 1096
+      sha256: 5faab59d02a85e70d92dc2d47a9b4821779d71554c516164341f1d433a0b8364
   original:
-    hackage: morpheus-graphql-code-gen-0.18.0
+    hackage: morpheus-graphql-code-gen-0.19.3
 - completed:
-    hackage: morpheus-graphql-core-0.18.0@sha256:dcd144af1e9e16a09deb911643545e0c46486b8a16b5d0d612d2df926a78bf51,13878
+    hackage: morpheus-graphql-core-0.19.3@sha256:92446cf129fc320b97e5395c73d1a5a94eb55df41c1f1e2f81ca1ab3eea42040,13868
     pantry-tree:
       size: 19197
-      sha256: 1d4f1a5f35a07f00399bb0fffbc741c651984d17a360b6ad9789ebb4fd78b12a
+      sha256: 8f9a888a71818fc940ab734962ee978ac9faf08db91373682f545fbb786423dd
   original:
-    hackage: morpheus-graphql-core-0.18.0
+    hackage: morpheus-graphql-core-0.19.3
 snapshots:
 - completed:
-    size: 586268
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/13.yaml
-    sha256: d9e658a22cfe8d87a64fdf219885f942fef5fe2bcb156a9800174911c5da2443
-  original: lts-18.13
+    size: 619093
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/19/5.yaml
+    sha256: b936d27d647a31a8834d3efec126e2a07dee9c9bd6dd401d9bdac77e7b278f1e
+  original: lts-19.5
